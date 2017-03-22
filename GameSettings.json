@@ -5,11 +5,11 @@
                       "Players" : {
                                    "192.168.0.100" : {
                                                       "HMDName" : "HMD_1",
-                                                      "@TypeHash" : 881150128
+                                                      "@TypeHash" : 871055184
                                                      }
                                   },
                       "Controllers" : null,
                       "Properties" : null,
-                      "@TypeHash" : 523173976
+                      "@TypeHash" : 882215896
                      }
 }

@@ -9,6 +9,8 @@ public class AliceNetworkPlayer : NetworkBehaviour {
     public AliceHMD hmd;
 
     [SyncVar]
+    public string aliceServerAddress;
+    [SyncVar]
     public int hmdDeviceCode;
 
     private void Start()
@@ -31,7 +33,16 @@ public class AliceNetworkPlayer : NetworkBehaviour {
 
     private void Update()
     {
+        UpdateAliceAddress();
         UpdateHMD();
+    }
+
+    void UpdateAliceAddress()
+    {
+        if( GameRoot.Instance.Settings.Tracking.AliceServerAddress == string.Empty )
+        {
+            GameRoot.Instance.Settings.Tracking.AliceServerAddress = aliceServerAddress;
+        }
     }
 
     void UpdateHMD()

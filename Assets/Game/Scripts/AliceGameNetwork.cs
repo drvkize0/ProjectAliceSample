@@ -18,6 +18,7 @@ public class AliceGameNetwork : NetworkManager {
 
     public void Update()
     {
+        // if we are not server, and discovery has return a valid server address, connect to this address
         if( !isNetworkActive && discovery.serverAddress != string.Empty )
         {
             networkAddress = discovery.serverAddress;
@@ -28,7 +29,7 @@ public class AliceGameNetwork : NetworkManager {
 
     public override void OnStartServer()
     {
-        // when server started, switch to discovery as server
+        // when start as a server, switch discovery as server, broadcast my address
         discovery.DiscoveryStop();
         discovery.DiscoveryStartServer();
         GetComponent<NetworkManagerHUD>().showGUI = false;
@@ -36,7 +37,7 @@ public class AliceGameNetwork : NetworkManager {
 
     public override void OnStopHost()
     {
-        // when server stopped, swithc to discovery as client
+        // when server stopped, switch discovery back as client
         discovery.DiscoveryStop();
         discovery.DiscoveryStartClient();
         GetComponent<NetworkManagerHUD>().showGUI = true;
@@ -44,14 +45,14 @@ public class AliceGameNetwork : NetworkManager {
 
     public override void OnStartClient(NetworkClient client)
     {
-        // when client started, stop discovery as client
+        // when started as client, means we already had the server address, stop discovery.
         discovery.DiscoveryStop();
         GetComponent<NetworkManagerHUD>().showGUI = false;
     }
 
     public override void OnStopClient()
     {
-        // when client stopped, start discovery as client
+        // when client stopped, turn on this discovery again
         discovery.DiscoveryStartClient();
         GetComponent<NetworkManagerHUD>().showGUI = true;
     }
@@ -61,6 +62,7 @@ public class AliceGameNetwork : NetworkManager {
         var player = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
         AliceNetworkPlayer netPlayer = player.GetComponent<AliceNetworkPlayer>();
 
+        // find player hmd name by player IP address from settings
         PlayerSettings playerSettings = null;
         string addressInSettings = conn.address.Replace("::ffff:", "");
         GameRoot.Instance.Settings.Tracking.Players.TryGetValue( addressInSettings, out playerSettings );
@@ -78,27 +80,14 @@ public class AliceGameNetwork : NetworkManager {
             return;
         }
 
+        // assign alice server address, and hmd device code to player
+        netPlayer.aliceServerAddress = GameRoot.Instance.Settings.Tracking.AliceServerAddress;
         netPlayer.hmdDeviceCode = config.DeviceCode;
-
         Debug.Log("Add player with hmdDeviceCode " + netPlayer.hmdDeviceCode);
-        NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
-    }
 
-    public string LocalIPAddress( string localAddress )
-    {
-        IPHostEntry host;
-        string localIP = "";
-        host = Dns.GetHostEntry(Dns.GetHostName());
-        foreach (IPAddress ip in host.AddressList)
-        {
-            if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-            {
-                
-                localIP = ip.ToString();
-                Debug.Log(localIP);
-                //break;
-            }
-        }
-        return localIP;
+        // assign other values for the player here
+
+        // network spawn
+        NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
     }
 }

@@ -25,7 +25,7 @@ public class TrackingList : Profile
     [ProfileKey]
     public string profileName = "DefaultSettings";
 
-    public string AliceServerAddress = "192.168.0.100";
+    public string AliceServerAddress = string.Empty;
     public Dictionary<string, PlayerSettings> Players = new Dictionary<string, PlayerSettings>();
     public List<string> Controllers = new List<string>();
     public List<string> Properties = new List<string>();
@@ -109,7 +109,9 @@ public class GameSettings
         {
             Debug.LogWarning("Game settings file not found, path = " + path + " rebuild with default value");
             list = manager.GetOrCreateProfile("DefaultSettings", new TrackingList() );
-            Tracking.AddPlayer("192.168.0.100", "N/A");
+
+            // add a dummy address, just for reconstruct the config file when it's been deleted
+            Tracking.AddPlayer("127.0.0.1", "N/A");
             Debug.Log(Tracking.Players.Count + " players saved");
         }
     }

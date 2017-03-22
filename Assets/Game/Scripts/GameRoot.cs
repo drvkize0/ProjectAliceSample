@@ -7,8 +7,9 @@ public class GameRoot : Singleton<GameRoot> {
 
     public string settingsPath;
 
-    AliceInstanceManager aig;
     GameSettings settings = new GameSettings();
+    AliceInstanceManager aig;
+    AliceGameNetwork agn;
 
     public GameSettings Settings { get { return settings; } }
 
@@ -19,7 +20,7 @@ public class GameRoot : Singleton<GameRoot> {
 
     private void OnDisable()
     {
-        settings.SaveSettings();
+        // settings.SaveSettings();
     }
 
     void Start () {
@@ -30,10 +31,37 @@ public class GameRoot : Singleton<GameRoot> {
         {
             aig = FindObjectOfType<AliceInstanceManager>();
         }
+
+        if( agn == null )
+        {
+            agn = FindObjectOfType<AliceGameNetwork>();
+        }
+
         if( aig != null )
         {
+            aig.trackingOnStart = false;
             DontDestroyOnLoad(aig);
+        }
+    }
+
+    private void Update()
+    {
+        // start tracking
+        if( aig != null && Settings.Tracking.AliceServerAddress != string.Empty && aig.StreamIP == string.Empty )
+        {
             aig.StreamIP = settings.Tracking.AliceServerAddress;
+            aig.StartTrack(Settings.Tracking.AliceServerAddress);
+            Debug.Log("Tracking started");
+        }
+    }
+
+    private void OnApplicationQuit()
+    {
+        // stop tracking
+        if( aig != null && aig.StreamIP != string.Empty )
+        {
+            aig.StopTrack();
+            Debug.Log("Tracking stopped");
         }
     }
 }
