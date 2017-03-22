@@ -10,8 +10,15 @@ public class GameRoot : Singleton<GameRoot> {
     GameSettings settings = new GameSettings();
     AliceInstanceManager aig;
     AliceGameNetwork agn;
+    CameraManager cm;
+
+    List<AliceNetworkPlayer> players = new List<AliceNetworkPlayer>();
 
     public GameSettings Settings { get { return settings; } }
+    public AliceInstanceManager AIG { get { return aig; } }
+    public AliceGameNetwork AGN { get { return agn; } }
+    public CameraManager CM {  get { return cm; } }
+    public List<AliceNetworkPlayer> Players { get { return players; } }
 
     private void OnEnable()
     {
@@ -27,6 +34,8 @@ public class GameRoot : Singleton<GameRoot> {
 
         DontDestroyOnLoad(this);
 
+        // try get managers
+
         if ( aig == null )
         {
             aig = FindObjectOfType<AliceInstanceManager>();
@@ -37,10 +46,20 @@ public class GameRoot : Singleton<GameRoot> {
             agn = FindObjectOfType<AliceGameNetwork>();
         }
 
+        if(cm == null )
+        {
+            cm = FindObjectOfType<CameraManager>();
+        }
+
         if( aig != null )
         {
             aig.trackingOnStart = false;
             DontDestroyOnLoad(aig);
+        }
+
+        if(cm != null )
+        {
+            DontDestroyOnLoad(cm);
         }
     }
 
@@ -63,5 +82,17 @@ public class GameRoot : Singleton<GameRoot> {
             aig.StopTrack();
             Debug.Log("Tracking stopped");
         }
+    }
+
+    public void AddPlayer( AliceNetworkPlayer player )
+    {
+        players.Add(player);
+        Debug.Log("Player " + player.playerAddress + " added");
+    }
+
+    public void RemovePlayer( AliceNetworkPlayer player )
+    {
+        players.Remove(player);
+        Debug.Log("Player " + player.playerAddress + " removed");
     }
 }

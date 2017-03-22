@@ -9,18 +9,43 @@ public class AliceNetworkPlayer : NetworkBehaviour {
     public AliceHMD hmd;
 
     [SyncVar]
+    public string playerAddress;
+    [SyncVar]
     public string aliceServerAddress;
     [SyncVar]
     public int hmdDeviceCode;
 
-    private void Start()
+    public bool activeHMD;
+
+    public override void OnStartServer()
     {
-        if( hmd == null )
+        Init();
+    }
+
+    public override void OnStartClient()
+    {
+        Init();
+    }
+
+    private void OnDestroy()
+    {
+        Release();
+    }
+
+    private void Update()
+    {
+        UpdateAliceAddress();
+        UpdateHMD();
+    }
+
+    void Init()
+    {
+        if (hmd == null)
         {
             hmd = GetComponentInChildren<AliceHMD>();
         }
 
-        if( hmd != null )
+        if (hmd != null)
         {
             hmd.deviceCode = hmdDeviceCode;
             Debug.Log("Set HMD deviceCode to " + hmd.deviceCode);
@@ -29,12 +54,13 @@ public class AliceNetworkPlayer : NetworkBehaviour {
         {
             Debug.Log("Can not find player HMD");
         }
+
+        GameRoot.Instance.AddPlayer(this);
     }
 
-    private void Update()
+    void Release()
     {
-        UpdateAliceAddress();
-        UpdateHMD();
+        GameRoot.Instance.RemovePlayer(this);
     }
 
     void UpdateAliceAddress()
@@ -52,9 +78,26 @@ public class AliceNetworkPlayer : NetworkBehaviour {
             hmd.rigidbodyName = TryGetDeviceName(hmdDeviceCode);
         }
 
-        if( IsLocalDevice( hmdDeviceCode ) )
+        if( hmd.activeHMD != activeHMD )
         {
-            hmd.activeHMD = true;
+            if( activeHMD )
+            {
+                if( IsLocalDevice(hmdDeviceCode) )
+                {
+                    hmd.SetMode(AliceHMD.Mode.FollowHMD);
+                    hmd.SetActiveHMD(true);
+                    hmd.ResetCamera();
+                }
+                else
+                {
+                    hmd.SetMode(AliceHMD.Mode.FollowRigidbody);
+                    hmd.SetActiveHMD(true);
+                }
+            }
+            else
+            {
+                hmd.SetActiveHMD(false);
+            }
         }
     }
 

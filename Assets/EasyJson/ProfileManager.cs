@@ -57,7 +57,7 @@ namespace ProjectAlice
                 StreamReader reader = null;
                 try
                 {
-                    stream = new FileStream(path, FileMode.OpenOrCreate);
+                    stream = new FileStream(path, FileMode.Open);
                     reader = new StreamReader(stream);
                 }
                 catch

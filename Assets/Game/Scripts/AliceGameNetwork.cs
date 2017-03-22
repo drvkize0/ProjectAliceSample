@@ -8,6 +8,8 @@ using ProjectAlice;
 public class AliceGameNetwork : NetworkManager {
 
     public AliceNetworkDiscovery discovery;
+    public bool isClientConnected = false;
+    public bool isServer = false;
 
     // main routine
     public void Start()
@@ -33,6 +35,7 @@ public class AliceGameNetwork : NetworkManager {
         discovery.DiscoveryStop();
         discovery.DiscoveryStartServer();
         GetComponent<NetworkManagerHUD>().showGUI = false;
+        isServer = true;
     }
 
     public override void OnStopHost()
@@ -41,6 +44,7 @@ public class AliceGameNetwork : NetworkManager {
         discovery.DiscoveryStop();
         discovery.DiscoveryStartClient();
         GetComponent<NetworkManagerHUD>().showGUI = true;
+        isServer = false;
     }
 
     public override void OnStartClient(NetworkClient client)
@@ -48,6 +52,7 @@ public class AliceGameNetwork : NetworkManager {
         // when started as client, means we already had the server address, stop discovery.
         discovery.DiscoveryStop();
         GetComponent<NetworkManagerHUD>().showGUI = false;
+        isClientConnected = true;
     }
 
     public override void OnStopClient()
@@ -55,6 +60,7 @@ public class AliceGameNetwork : NetworkManager {
         // when client stopped, turn on this discovery again
         discovery.DiscoveryStartClient();
         GetComponent<NetworkManagerHUD>().showGUI = true;
+        isClientConnected = false;
     }
 
     public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
@@ -81,6 +87,7 @@ public class AliceGameNetwork : NetworkManager {
         }
 
         // assign alice server address, and hmd device code to player
+        netPlayer.playerAddress = addressInSettings;
         netPlayer.aliceServerAddress = GameRoot.Instance.Settings.Tracking.AliceServerAddress;
         netPlayer.hmdDeviceCode = config.DeviceCode;
         Debug.Log("Add player with hmdDeviceCode " + netPlayer.hmdDeviceCode);
