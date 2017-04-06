@@ -3,8 +3,24 @@
                       "profileName" : "DefaultSettings",
                       "AliceServerAddress" : "192.168.0.100",
                       "Players" : {
-                                   "192.168.0.100" : {
-                                                      "HMDName" : "HMD_1",
+                                    "192.168.0.201" : {
+                                                      "HMDName" : "HMD1",
+                                                      "@TypeHash" : 871055184
+                                                     },
+									"192.168.0.202" : {
+                                                      "HMDName" : "HMD2",
+                                                      "@TypeHash" : 871055184
+                                                     },
+									"192.168.0.203" : {
+                                                      "HMDName" : "HMD3",
+                                                      "@TypeHash" : 871055184
+                                                     },
+									"192.168.0.204" : {
+                                                      "HMDName" : "HMD4",
+                                                      "@TypeHash" : 871055184
+                                                     },
+									"localClient" : {
+                                                      "HMDName" : "HMD3",
                                                       "@TypeHash" : 871055184
                                                      }
                                   },

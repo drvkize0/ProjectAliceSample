@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 // litilei 2015.4.12
 // Unlit alpha-blended shader.
 // - no lighting
@@ -42,7 +44,7 @@ SubShader {
 			v2f vert (appdata_t v)
 			{
 				v2f o;
-				o.vertex = mul(UNITY_MATRIX_MVP, v.vertex);
+				o.vertex = UnityObjectToClipPos(v.vertex);
 				// o.texcoord = TRANSFORM_TEX(v.texcoord, _MainTex);
                 o.texcoord = v.texcoord;
 				return o;

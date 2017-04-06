@@ -65,9 +65,6 @@ public class AliceGameNetwork : NetworkManager {
 
     public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
     {
-        var player = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
-        AliceNetworkPlayer netPlayer = player.GetComponent<AliceNetworkPlayer>();
-
         // find player hmd name by player IP address from settings
         PlayerSettings playerSettings = null;
         string addressInSettings = conn.address.Replace("::ffff:", "");
@@ -86,6 +83,9 @@ public class AliceGameNetwork : NetworkManager {
             return;
         }
 
+        var player = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
+        AliceNetworkPlayer netPlayer = player.GetComponent<AliceNetworkPlayer>();
+
         // assign alice server address, and hmd device code to player
         netPlayer.playerAddress = addressInSettings;
         netPlayer.aliceServerAddress = GameRoot.Instance.Settings.Tracking.AliceServerAddress;
@@ -96,5 +96,26 @@ public class AliceGameNetwork : NetworkManager {
 
         // network spawn
         NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
+    }
+
+    public void SpawnPhysicalObject()
+    {
+        if( isServer )
+        {
+            Debug.Log("AGN, SpawnPhyscialObject");
+            GameObject obj = GameObject.Instantiate(spawnPrefabs[0]);
+            GameRoot.Instance.AddPhysicalObject(obj);
+            NetworkServer.Spawn(obj);
+        }
+    }
+
+    public void DestroyPhyscialObject( GameObject obj )
+    {
+        if( isServer )
+        {
+            Debug.Log("AGN, DestroyPhyscialObject");
+            GameRoot.Instance.RemovePhysicalObject(obj);
+            NetworkServer.Destroy(obj);
+        }
     }
 }
